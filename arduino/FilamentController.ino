@@ -52,24 +52,24 @@ void setup() {
 }
 
 void loop() {
-  checkFanInput();
-  pushFanState();
+  checkSerialInput();
+  saveFanState();
   analogWrite(FAN1, FAN1_STATE);
   analogWrite(FAN2, FAN2_STATE);
   SENSOR_STATE=analogRead(SENSOR);
-  Serial.print("F1: ");
   Serial.print(FAN1_STATE);
-  Serial.print(" F2: ");
+  Serial.print(',');
   Serial.print(FAN2_STATE);
-  Serial.print(" S: ");
+  Serial.print(',');
   Serial.println(SENSOR_STATE);
+  delay(20);
 
   //check serial to see if any new fan values have come
   //write them and update if they have
   //send current fan state and sensor value over serial
 }
 
-void checkFanInput() {
+void checkSerialInput() {
   if(Serial.available()>0){
     String input = Serial.readString();
     input.toLowerCase();
@@ -77,13 +77,19 @@ void checkFanInput() {
     if (input[0] == 'f' && (fanType == '1' || fanType == '2') && input[2] == ':') {
        String magnitudeString = input.substring(3);
        byte magnitude = magnitudeString.toInt();
-       if(fanType == '1') {
-          FAN1_STATE = magnitude; 
-       } else {
-          FAN2_STATE = magnitude;
-       }
+       if(fanType == '1') {FAN1_STATE = magnitude;} 
+       if(fanType == '2') {FAN2_STATE = magnitude;}
        Serial.println("[Setting Fan " + String(fanType) + " to " + magnitude + "]");
-    } else {
+    }
+
+    if(input[0] == 's' && (input[1] == 'f' || input[1] == 'r') && input[2] == ':'){
+    	String stepString = input.substring(3);
+    	unsigned int steps = stepString.toInt();
+    	if(input[1]=='f'){multiStep(steps, true);}
+    	if(input[1]=='r'){multiStep(steps, false);}
+    }
+
+    else {
       Serial.println("Incorrect statement");  
     }
   }
@@ -94,7 +100,7 @@ void retrieveFanState(){ //retrieve last fan state from EEPROM and update state 
   FAN2_STATE=EEPROM.read(FAN2_EEPROM_ADDR);
 }
 
-void pushFanState(){ //write current fan state to memory (only pushes if it's changed)
+void saveFanState(){ //write current fan state to memory (only pushes if it's changed)
   EEPROM.update(FAN1_EEPROM_ADDR, FAN1_STATE);
   EEPROM.update(FAN2_EEPROM_ADDR, FAN2_STATE);
 }
@@ -107,6 +113,12 @@ void singleStep(bool direction){
   digitalWrite(STP, LOW);
   delay(1);
   digitalWrite(DIR, direction_prior_state); //reset DIR to its prior state//takes a single step in the direction specified
+}
+
+void multiStep (unsigned int steps, bool direction){
+	for(unsigned int i=0; i<=steps; i++){
+		singleStep(direction);  
+	}
 }
 
 void resetBEDPins(){
