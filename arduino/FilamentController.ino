@@ -23,6 +23,7 @@
 byte FAN1_STATE=0;
 byte FAN2_STATE=0;
 unsigned int SENSOR_STATE=0;
+signed long MOTOR_POSITION=0;
 
 void setup() {
   //initialize pins
@@ -61,8 +62,10 @@ void loop() {
   Serial.print(',');
   Serial.print(FAN2_STATE);
   Serial.print(',');
+  Serial.print(MOTOR_POSITION);
+  Serial.print(',');
   Serial.println(SENSOR_STATE);
-  delay(20);
+  delay(100);
 
   //check serial to see if any new fan values have come
   //write them and update if they have
@@ -113,6 +116,8 @@ void singleStep(bool direction){
   digitalWrite(STP, LOW);
   delay(1);
   digitalWrite(DIR, direction_prior_state); //reset DIR to its prior state//takes a single step in the direction specified
+  if(direction){MOTOR_POSITION++;}
+  if(!direction){MOTOR_POSITION--;}
 }
 
 void multiStep (unsigned int steps, bool direction){
