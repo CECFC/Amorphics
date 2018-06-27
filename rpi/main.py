@@ -27,13 +27,11 @@ def animate(i):
     # addRandomData()
     ax1.clear()
     ax1.plot(xAxis, data)
-    line = str(ser.readline())
-    nodes = line.split(',')
+    ser.write(bytes('\n', 'utf-8'))
+    line = ser.readline()
     sensor = 0
-    sensor_str = ""
-    if len(nodes) == 4:
-        sensor_str = nodes[3][:-5]
-        sensor = int(sensor_str) * 0.00488758553
+    sensor_str = line[:-2]
+    sensor = int(sensor_str)
     addData(sensor)
 
 
