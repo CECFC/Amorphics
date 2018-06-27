@@ -12,15 +12,23 @@ Mac Serial Name: /dev/cu.usbserial-1440
 Pi Serial Name: /dev/ttyUSB0
 """
 
-style.use('fivethirtyeight')
+# style.use('dark_background')
 
 fig = plt.figure()
 ax1 = fig.add_subplot(1,1,1)
+ax2 = fig.add_subplot(1,1,1)
+ax3 = fig.add_subplot(1,1,1)
+ax4 = fig.add_subplot(1,1,1)
+
+
 
 MAX_LENGTH = 60
 
 data = []
 xAxis = []
+perfect = []
+top = []
+bottom = []
 
 ser = serial.Serial('/dev/cu.usbserial-1440', 115200, timeout=1)
 
@@ -28,17 +36,23 @@ def initializeData():
     for i in range(MAX_LENGTH):
         xAxis.append(i)
         data.append(0)
+        top.append(5)
+        perfect.append(2.5)
+        bottom.append(0)
 
 def animate(i):
     # addRandomData()
     ax1.clear()
-    ax1.plot(xAxis, data)
+    ax2.plot(xAxis, perfect, color="green")
+    ax3.plot(xAxis, top, color="white")
+    ax4.plot(xAxis, bottom, color="white")
+    ax1.plot(xAxis, data, color="blue")
     ser.write(bytes('\n', 'utf-8'))
     line = ser.readline()
     sensor = 0
     sensor_str = line
     if len(sensor_str) > 0:
-        sensor = int(sensor_str)
+        sensor = int(sensor_str) * 0.00488758553
     addData(sensor)
 
 
