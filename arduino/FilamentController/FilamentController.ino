@@ -55,45 +55,39 @@ void setup() {
 void loop() {
   checkSerialInput();
   saveFanState();
+  
   analogWrite(FAN1, FAN1_STATE);
   analogWrite(FAN2, FAN2_STATE);
   SENSOR_STATE=analogRead(SENSOR);
-  Serial.print(FAN1_STATE);
-  Serial.print(',');
-  Serial.print(FAN2_STATE);
-  Serial.print(',');
-  Serial.print(MOTOR_POSITION);
-  Serial.print(',');
-  Serial.println(SENSOR_STATE);
-  delay(100);
 
   //check serial to see if any new fan values have come
   //write them and update if they have
   //send current fan state and sensor value over serial
+  delay(1);
 }
 
 void checkSerialInput() {
   if(Serial.available()>0){
-    String input = Serial.readString();
-    input.toLowerCase();
-    char fanType = input[1];
-    if (input[0] == 'f' && (fanType == '1' || fanType == '2') && input[2] == ':') {
-       String magnitudeString = input.substring(3);
-       byte magnitude = magnitudeString.toInt();
-       if(fanType == '1') {FAN1_STATE = magnitude;} 
-       if(fanType == '2') {FAN2_STATE = magnitude;}
-       Serial.println("[Setting Fan " + String(fanType) + " to " + magnitude + "]");
-    }
-
-    if(input[0] == 's' && (input[1] == 'f' || input[1] == 'r') && input[2] == ':'){
-    	String stepString = input.substring(3);
-    	unsigned int steps = stepString.toInt();
-    	if(input[1]=='f'){multiStep(steps, true);}
-    	if(input[1]=='r'){multiStep(steps, false);}
-    }
-
-    else {
-      Serial.println("Incorrect statement");  
+    if (Serial.read() == 10) {
+      Serial.println(SENSOR_STATE);
+    } else {
+      String input = Serial.readString();
+      input.toLowerCase();
+      char fanType = input[1];
+      if (input[0] == 'f' && (fanType == '1' || fanType == '2') && input[2] == ':') {
+         String magnitudeString = input.substring(3);
+         byte magnitude = magnitudeString.toInt();
+         if(fanType == '1') {FAN1_STATE = magnitude;} 
+         if(fanType == '2') {FAN2_STATE = magnitude;}
+         Serial.println("[Setting Fan " + String(fanType) + " to " + magnitude + "]");
+      } else if(input[0] == 's' && (input[1] == 'f' || input[1] == 'r') && input[2] == ':'){
+      	String stepString = input.substring(3);
+      	unsigned int steps = stepString.toInt();
+      	if(input[1]=='f'){multiStep(steps, true);}
+      	if(input[1]=='r'){multiStep(steps, false);}
+      } else {
+        Serial.println("Incorrect statement");  
+      }
     }
   }
 }
@@ -104,8 +98,13 @@ void retrieveFanState(){ //retrieve last fan state from EEPROM and update state 
 }
 
 void saveFanState(){ //write current fan state to memory (only pushes if it's changed)
-  EEPROM.update(FAN1_EEPROM_ADDR, FAN1_STATE);
-  EEPROM.update(FAN2_EEPROM_ADDR, FAN2_STATE);
+  // 
+  if( EEPROM.read(FAN1_EEPROM_ADDR) != FAN1_STATE ){
+    EEPROM.write(FAN1_EEPROM_ADDR, FAN1_STATE);
+  }
+  if( EEPROM.read(FAN2_EEPROM_ADDR) != FAN2_STATE ){
+    EEPROM.write(FAN2_EEPROM_ADDR, FAN2_STATE);
+  }
 }
 
 void singleStep(bool direction){
