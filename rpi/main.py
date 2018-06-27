@@ -16,7 +16,7 @@ MAX_LENGTH = 60
 data = []
 xAxis = []
 
-ser = serial.Serial('/dev/cu.usbserial-1440', 115200, timeout=1)
+ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
 def initializeData():
     for i in range(MAX_LENGTH):
@@ -31,8 +31,8 @@ def animate(i):
     nodes = line.split(',')
     sensor = 0
     sensor_str = ""
-    if len(nodes) == 3:
-        sensor_str = nodes[2][:-5]
+    if len(nodes) == 4:
+        sensor_str = nodes[3][:-5]
         sensor = int(sensor_str) * 0.00488758553
     addData(sensor)
 
