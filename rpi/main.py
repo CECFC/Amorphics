@@ -6,6 +6,12 @@ import matplotlib.animation as animation
 from matplotlib import style
 import serial
 
+"""
+======Stuff to Know======
+Mac Serial Name: /dev/cu.usbserial-1440
+Pi Serial Name: /dev/ttyUSB0
+"""
+
 style.use('fivethirtyeight')
 
 fig = plt.figure()
@@ -16,7 +22,7 @@ MAX_LENGTH = 60
 data = []
 xAxis = []
 
-ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
+ser = serial.Serial('/dev/cu.usbserial-1440', 115200, timeout=1)
 
 def initializeData():
     for i in range(MAX_LENGTH):
@@ -30,8 +36,9 @@ def animate(i):
     ser.write(bytes('\n', 'utf-8'))
     line = ser.readline()
     sensor = 0
-    sensor_str = line[:-2]
-    sensor = int(sensor_str)
+    sensor_str = line
+    if len(sensor_str) > 0:
+        sensor = int(sensor_str)
     addData(sensor)
 
 
