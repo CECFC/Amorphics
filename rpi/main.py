@@ -31,7 +31,11 @@ perfect = []
 top = []
 bottom = []
 
-ser = serial.Serial('/dev/ttyUSB1', 115200, timeout=1)
+ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
+
+fan1 = 0 
+fan2 = 0
+motor = 0
 
 def initializeData():
     for i in range(MAX_LENGTH):
@@ -42,10 +46,34 @@ def initializeData():
         bottom.append(0)
 
 def animate(i):
-	
-	if keyboard.is_pressed('y'):
+	global fan1
+	global fan2
+	global motor
+	if keyboard.is_pressed('ctrl'):
 		command = input(">>> ")
-		ser.write(bytes(command, 'utf-8'))
+		parsed = ""
+		if command != "":
+			if command[0] == 'f' and len(command)>3:
+				magnitudeStr = command[3:]
+				if command[1] == '1':
+					fan1 = int(magnitudeStr)
+					parsed = 'r' + '+'*fan1 + 'p'*fan2
+				elif command[1] == '2':
+					fan2 = int(magnitudeStr)
+					parsed = 'r' + 'p'*fan2 + '+'*fan1
+			elif command[0] == 's' and len(command)>3:
+				magnitudeStr = command[3:]
+				mag = int(magnitudeStr)
+				if command[1] == 'f':
+					parsed = 'f'*mag
+					motor += mag
+				elif command[1] == 'b':
+					parsed = 'b'*mag
+					motor -= mag
+			else:
+				parsed = command
+		print(parsed)
+		ser.write(bytes(parsed, 'utf-8'))
     # addRandomData()
 	ax1.clear()
 	ax2.plot(xAxis, perfect, color="green")
