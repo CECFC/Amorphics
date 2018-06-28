@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib import style
 import serial
+import keyboard
 
 """
 ======Stuff to Know======
@@ -30,30 +31,34 @@ perfect = []
 top = []
 bottom = []
 
-ser = serial.Serial('/dev/cu.usbserial-1440', 115200, timeout=1)
+ser = serial.Serial('/dev/ttyUSB1', 115200, timeout=1)
 
 def initializeData():
     for i in range(MAX_LENGTH):
         xAxis.append(i)
         data.append(0)
         top.append(5)
-        perfect.append(2.5)
+        perfect.append(3)
         bottom.append(0)
 
 def animate(i):
+	
+	if keyboard.is_pressed('y'):
+		command = input(">>> ")
+		ser.write(bytes(command, 'utf-8'))
     # addRandomData()
-    ax1.clear()
-    ax2.plot(xAxis, perfect, color="green")
-    ax3.plot(xAxis, top, color="white")
-    ax4.plot(xAxis, bottom, color="white")
-    ax1.plot(xAxis, data, color="blue")
-    ser.write(bytes('\n', 'utf-8'))
-    line = ser.readline()
-    sensor = 0
-    sensor_str = line
-    if len(sensor_str) > 0:
-        sensor = int(sensor_str) * 0.00488758553
-    addData(sensor)
+	ax1.clear()
+	ax2.plot(xAxis, perfect, color="green")
+	ax3.plot(xAxis, top, color="white")
+	ax4.plot(xAxis, bottom, color="white")
+	ax1.plot(xAxis, data, color="blue")
+	ser.write(bytes('s', 'utf-8'))
+	line = ser.readline()
+	sensor = 0
+	sensor_str = line
+	if len(sensor_str) > 0:
+		sensor = int(sensor_str) * 0.00488758553
+	addData(sensor)
 
 
 def popData():
