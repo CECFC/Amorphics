@@ -35,7 +35,7 @@ void resetBEDPins() {
 
 void singleStep(bool direction) {
   bool direction_prior_state = digitalRead(DIR); //save current directions setting to reset to at end of step
-  digitalWrite(DIR, direction); //set the direction
+  digitalWrite(DIR, !direction); //set the direction
   digitalWrite(STP, HIGH); //send a single pulse to step the motor
   delay(1);
   digitalWrite(STP, LOW);
@@ -48,13 +48,7 @@ void singleStep(bool direction) {
     MOTOR_POSITION--;
   }
 }
-
-void multiStep (unsigned int steps, bool direction) {
-  for (unsigned int i = 0; i <= steps; i++) {
-    singleStep(direction);
-  }
-}
-
+/*
 void checkSerialInput() {
   if (Serial.available() == 1) {
     if (Serial.read() == 10) {
@@ -89,23 +83,56 @@ void checkSerialInput() {
     }
   }
 }
+*/
 
-
-void retrieveFanState() { //retrieve last fan state from EEPROM and update state variables
-  FAN1_STATE = EEPROM.read(FAN1_EEPROM_ADDR);
-  FAN2_STATE = EEPROM.read(FAN2_EEPROM_ADDR);
-}
-
-void saveFanState() { //write current fan state to memory (only pushes if it's changed)
-  //
-  if ( EEPROM.read(FAN1_EEPROM_ADDR) != FAN1_STATE ) {
-    EEPROM.write(FAN1_EEPROM_ADDR, FAN1_STATE);
+void checkSerialInput2(){
+  while(Serial.available()>0){
+    char input=Serial.read();
+    switch (input){
+        case 'f':
+          singleStep(true);
+          break;
+        case 'b':
+          singleStep(false);
+          break;
+        case 's':
+          Serial.println(SENSOR_STATE);
+          break;
+        case '1':
+          Serial.println(FAN1_STATE);
+          break;
+        case '2':
+          Serial.println(FAN2_STATE);
+          break;
+        case '+':
+          if(FAN1_STATE<255){
+            FAN1_STATE++;
+          }
+          break;
+        case '-':
+          if(FAN1_STATE>0){
+            FAN1_STATE--;
+          }
+          break;
+        case 'p':
+          if(FAN2_STATE<255){
+            FAN2_STATE++;
+          }
+          break;
+        case 'm':
+          if(FAN2_STATE>0){
+            FAN2_STATE--;
+          }
+          break;
+        case 'r':
+          FAN1_STATE=0;
+          FAN2_STATE=0;
+          break;
+        default:
+          break;
+    }
   }
-  if ( EEPROM.read(FAN2_EEPROM_ADDR) != FAN2_STATE ) {
-    EEPROM.write(FAN2_EEPROM_ADDR, FAN2_STATE);
-  }
 }
-
 
 
 void setup() {
@@ -126,26 +153,16 @@ void setup() {
   resetBEDPins();
   analogWrite(FAN1, 0); //turn FAN1 off
   analogWrite(FAN2, 0); //turn FAN2 off
-
-  //grab previous fan state from EEPROM
-  retrieveFanState();
-
-  //bring fans up to previous setting
-  analogWrite(FAN1, FAN1_STATE);
-  analogWrite(FAN2, FAN2_STATE);
 }
 
 void loop() {
-  checkSerialInput();
-  saveFanState();
+  SENSOR_STATE = analogRead(SENSOR);
+  checkSerialInput2();
 
   analogWrite(FAN1, FAN1_STATE);
   analogWrite(FAN2, FAN2_STATE);
-  SENSOR_STATE = analogRead(SENSOR);
-
   //check serial to see if any new fan values have come
   //write them and update if they have
   //send current fan state and sensor value over serial
-  delay(1);
 }
 
