@@ -109,19 +109,9 @@ void checkSerialInput2(){
             FAN1_STATE++;
           }
           break;
-        case '-':
-          if(FAN1_STATE>0){
-            FAN1_STATE--;
-          }
-          break;
         case 'p':
           if(FAN2_STATE<255){
             FAN2_STATE++;
-          }
-          break;
-        case 'm':
-          if(FAN2_STATE>0){
-            FAN2_STATE--;
           }
           break;
         case 'r':
