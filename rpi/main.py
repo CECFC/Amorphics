@@ -18,8 +18,11 @@ Y_UPPER_LIM = 3.5 #upper y bound of the plot
 PLOT_NAME = 'Sensor Data' #name of the matplotlib window
 
 ADC_I2C_ADDR = 0x49 #I2C address of the ADC
+PWM_FREQ = 100 #PWM frequency to use for controlling fan speed
 STP_PIN = 20 #GPIO pin connected to the STP pin of the BED
 DIR_PIN = 21 #GPIO pin connected to the DIR pin of the BED
+FAN1_PIN = 19 #GPIO pin connected to the channel 1 enable on the L298
+FAN2_PIN = 13 #GPIO pin connected to the channel 2 enable on the L298
 
 K_p = 2 #constant for the proportional component of the control loop
 K_i = 2 #constant for the integral component of the control loop
@@ -56,6 +59,12 @@ last_loop_timestamp=0 #stores the timestamp of the previous animation loop execu
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(DIR_PIN, GPIO.OUT)
 GPIO.setup(STP_PIN, GPIO.OUT)
+GPIO.setup(FAN1_PIN, GPIO.OUT)
+GPIO.setup(FAN2_PIN, GPIO.OUT)
+fan1_pwm = GPIO.PWM(FAN1_PIN, PWM_FREQ)
+fan2_pwm = GPIO.PWM(FAN2_PWM, PWM_FREQ)
+fan1_pwm.start(0)
+fan2_pwm.start(0)
 
 #I2C init
 bus=smbus.SMBus(1)
@@ -118,11 +127,11 @@ def print_status():
 		print("FPS: "+str(CURRENT_FPS))
 
 def animate(i):
-	global CURRENT_FPS
-	global PID_ENABLE	
+	global PID_ENABLE
+	global FAN1_STATE, FAN2_STATE
+
 	if FPS_DEBUG_ENABLE: #get current framerate if enabled
-		global current_loop_timestamp
-		global last_loop_timestamp
+		global current_loop_timestamp, last_loop_timestamp, CURRENT_FPS
 		CURRENT_FPS = 1/(current_loop_timestamp-last_loop_timestamp)
 		last_loop_timestamp=current_loop_timestamp
 		current_loop_timestamp=time.time()
@@ -136,11 +145,9 @@ def animate(i):
 			if command[0] == 'f' and len(command)>3:
 				magnitudeStr = command[3:]
 				if command[1] == '1':
-					pass
-					#update fan1 state
+					FAN1_STATE=int(magnitudeStr)
 				elif command[1] == '2':
-					pass
-					#update fan2 state
+					FAN2_STATE=int(magnitudeStr)
 			elif command[0] == 's' and len(command)>3:
 				magnitudeStr = command[3:]
 				mag = int(magnitudeStr)
@@ -194,7 +201,11 @@ def animate(i):
 			ax1.set_facecolor('white')
 			ax1.set_facecolor('white')
 			ax1.set_facecolor('white')
-	
+			
+	#update fan speeds
+	fan1_pwm.ChangeDutyCycle(FAN1_STATE)
+	fan2_pwm.ChangeDutyCycle(FAN2_STATE)
+
 	#run control loop if enabled
 	if PID_ENABLE:
 		checkSteps(data[0])
