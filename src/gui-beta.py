@@ -39,9 +39,19 @@ style.use('fivethirtyeight')
 
 fig = plt.figure()
 
-root = tk.Tk()
+root = tk.Toplevel()
 root.geometry("1920x1080+0+0")
 root.title("Amorphics")
+
+# Back Splash
+
+backsplash_img = ImageTk.PhotoImage(Image.open('src/bigblob.png'))
+
+backsplash_canvas = Canvas(root, width=1920, height=1080)
+
+backsplash_canvas.create_image(200, 100, anchor=NW, image=backsplash_img) 
+
+backsplash_canvas.place(x=0, y=0)
 
 canvas = FigureCanvasTkAgg(fig, master=root)
 canvas.get_tk_widget().place(x=800, y=0)
@@ -82,15 +92,6 @@ ax1 = fig.add_subplot(1,1,1)
 line, = ax1.plot(xAxis, data)
 
 toggle_pid()
-
-# Back Splash
-# backsplash_path = 'src/bigblob.png' 
-
-# backsplash_img = ImageTk.PhotoImage(Image.open(backsplash_path))
-
-# backsplash_canvas = Canvas(root, width=300, height=300)
-
-# backsplash_canvas.create_image(20, 20, anchor=NW, image=backsplash_img)  
 
 def animate(i):
     global current_loop_timestamp, last_loop_timestamp
