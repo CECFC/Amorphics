@@ -27,9 +27,9 @@ def toggle_pid():
     global pid_active
     pid_active = not pid_active
     if pid_active:
-        pid_button.config(text="PID ENABLED")
+        pid_button.config(text='PID ENABLED')
     else:
-        pid_button.config(text="PID DISABLED")
+        pid_button.config(text='PID DISABLED')
 
 def initialize_data():
     for i in range(MAX_LENGTH):
@@ -41,8 +41,8 @@ style.use('fivethirtyeight')
 fig = plt.figure()
 
 root = tk.Toplevel()
-root.geometry("1920x1080+0+0")
-root.title("Amorphics")
+root.geometry('1920x1080+0+0')
+root.title('Amorphics')
 
 # Back Splash
 
@@ -58,19 +58,19 @@ canvas = FigureCanvasTkAgg(fig, master=root)
 canvas.get_tk_widget().place(x=800, y=0)
 
 # Tkinter Widgets
-title_label = Label(root, text="AMORPHICS", font=('Aller Display', 70))
+title_label = Label(root, text='AMORPHICS', font=('Aller Display', 70))
 title_label.place(x=10, y=10)
-motor_label = Label(root, text="Motor Position: \t0", font=('Avenir LT Std 35 Light', 30))
-kp_label = Label(root, text="P: \t\t0", font=('Avenir LT Std 35 Light', 30))
-ki_label = Label(root, text="I: \t\t0", font=('Avenir LT Std 35 Light', 30))
-kd_label = Label(root, text="D: \t\t0", font=('Avenir LT Std 35 Light', 30))
-pid_button = Button(root, text="PID DISABLED", width=13, command=toggle_pid)
-diameter_label = Label(root, text="Diameter: \t0", font=('Avenir LT Std 35 Light', 30))
+motor_label = Label(root, text='Motor Position: \t0', font=('Avenir LT Std 35 Light', 30))
+kp_label = Label(root, text='P: \t\t0', font=('Avenir LT Std 35 Light', 30))
+ki_label = Label(root, text='I: \t\t0', font=('Avenir LT Std 35 Light', 30))
+kd_label = Label(root, text='D: \t\t0', font=('Avenir LT Std 35 Light', 30))
+pid_button = Button(root, text='PID DISABLED', width=13, command=toggle_pid)
+diameter_label = Label(root, text='Diameter: \t0', font=('Avenir LT Std 35 Light', 30))
 current_command = StringVar()
-current_command.set("hi")
+current_command.set('hi')
 
 # FPS - for debugging
-fps_label = Label(root, text="0 FPS", font=('Avenir LT Std 35 Light', 15))
+fps_label = Label(root, text='0 FPS', font=('Avenir LT Std 35 Light', 15))
 
 # Toggle FPS
 def toggle_fps(e):
@@ -78,17 +78,17 @@ def toggle_fps(e):
     if e.char == 'f':
         show_fps = not show_fps
 
-root.bind("<KeyPress>", toggle_fps)
+root.bind('<KeyPress>', toggle_fps)
 
 terminal_entry = Entry(root, textvariable=current_command)
 def commandEntered(p0):
-    print("Command: " + terminal_entry.get())
+    print('Command: ' + terminal_entry.get())
     terminal_entry.delete(0, 'end')
-terminal_entry.bind("<Return>", commandEntered)
+terminal_entry.bind('<Return>', commandEntered)
 
 # Fans
-f1_slider = Scale(root, from_=100, to=0, label="Fan 1", length=450, width=30, font=('Avenir LT Std 35 Light', 10))
-f2_slider = Scale(root, from_=100, to=0, label="Fan 2", length=450, width=30, font=('Avenir LT Std 35 Light', 10))
+f1_slider = Scale(root, from_=100, to=0, label='Fan 1', length=450, width=30, font=('Avenir LT Std 35 Light', 10))
+f2_slider = Scale(root, from_=100, to=0, label='Fan 2', length=450, width=30, font=('Avenir LT Std 35 Light', 10))
 
 fps_label.place(x=10, y=100)
 pid_button.place(x=10, y=150)
@@ -112,14 +112,14 @@ def animate(i):
         last_loop_timestamp=current_loop_timestamp
         current_loop_timestamp=time.time()
         fps = 1/(current_loop_timestamp-last_loop_timestamp)
-        fps_str = "FPS: " + str(fps)[0:4]
+        fps_str = 'FPS: ' + str(fps)[0:4]
         fps_label.config(text=fps_str)
     else:
         fps_label.config(text='')
     add_random_data()
     ax1.clear()
     ax1.plot(xAxis, data)
-    dia_str = "Diameter: \t" + str(data[MAX_LENGTH-1]) + "mm"
+    dia_str = 'Diameter: \t' + str(data[MAX_LENGTH-1]) + 'mm'
     diameter_label.config(text=dia_str)
     return ax1.lines[0],
 
@@ -143,7 +143,7 @@ def on_closing():
     root.destroy()
     sys.exit(0)
 
-root.protocol("WM_DELETE_WINDOW", on_closing)
+root.protocol('WM_DELETE_WINDOW', on_closing)
 
 ani = animation.FuncAnimation(fig, animate, init_func = initialize_data(), interval=1, blit=True)
 root.mainloop()
