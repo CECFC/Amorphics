@@ -41,6 +41,7 @@ fig = plt.figure()
 
 root = tk.Tk()
 root.geometry("1920x1080+0+0")
+root.title("Amorphics")
 
 canvas = FigureCanvasTkAgg(fig, master=root)
 canvas.get_tk_widget().place(x=800, y=0)
