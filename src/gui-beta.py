@@ -34,8 +34,6 @@ def initializeData():
         xAxis.append(i)
         data.append(0)
 
-
-initializeData()
 style.use('fivethirtyeight')
 
 fig = plt.figure()
@@ -87,7 +85,7 @@ def animate(i):
     global current_loop_timestamp, last_loop_timestamp
     last_loop_timestamp=current_loop_timestamp
     current_loop_timestamp=time.time()
-    print(1/(current_loop_timestamp-last_loop_timestamp))
+    #print(1/(current_loop_timestamp-last_loop_timestamp))
     addRandomData()
     ax1.clear()
     ax1.plot(xAxis, data)
@@ -117,5 +115,5 @@ def on_closing():
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
-ani = animation.FuncAnimation(fig, animate, interval=1, blit=True)
+ani = animation.FuncAnimation(fig, animate, init_func = initializeData(), interval=1, blit=True)
 root.mainloop()
