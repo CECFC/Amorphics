@@ -10,6 +10,10 @@ import matplotlib.animation as animation
 import math
 import random
 import sys
+import time # just for debugging purposes, delete later
+
+current_loop_timestamp=1 #stores the timestamp of the current animation loop execution
+last_loop_timestamp=0 #stores the timestamp of the previous animation loop execution
 
 MAX_LENGTH = 60
 data = []
@@ -49,7 +53,7 @@ motor_label = Label(root, text="Motor Position: \t0", font=('Avenir LT Std 35 Li
 kp_label = Label(root, text="P: \t\t0", font=('Avenir LT Std 35 Light', 30))
 ki_label = Label(root, text="I: \t\t0", font=('Avenir LT Std 35 Light', 30))
 kd_label = Label(root, text="D: \t\t0", font=('Avenir LT Std 35 Light', 30))
-pid_button = Button(root, text="PID DISABLED", width=10, command=togglePID)
+pid_button = Button(root, text="PID DISABLED", width=13, command=togglePID)
 diameter_label = Label(root, text="Diameter: \t0", font=('Avenir LT Std 35 Light', 30))
 current_command = StringVar()
 current_command.set("hi")
@@ -61,8 +65,8 @@ def commandEntered(p0):
     terminal_entry.delete(0, 'end')
 terminal_entry.bind("<Return>", commandEntered)
 # Fans
-f1_slider = Scale(root, from_=100, to=0, label="Fan 1", length=450, width=30)
-f2_slider = Scale(root, from_=100, to=0, label="Fan 2", length=450, width=30)
+f1_slider = Scale(root, from_=100, to=0, label="Fan 1", length=450, width=30, font=('Avenir LT Std 35 Light', 10))
+f2_slider = Scale(root, from_=100, to=0, label="Fan 2", length=450, width=30, font=('Avenir LT Std 35 Light', 10))
 
 pid_button.place(x=10, y=150)
 kp_label.place(x=10, y=200)
@@ -80,12 +84,15 @@ line, = ax1.plot(xAxis, data)
 togglePID()
 
 def animate(i):
+    global current_loop_timestamp, last_loop_timestamp
+    last_loop_timestamp=current_loop_timestamp
+    current_loop_timestamp=time.time()
+    print(1/(current_loop_timestamp-last_loop_timestamp))
     addRandomData()
     ax1.clear()
     ax1.plot(xAxis, data)
     dia_str = "Diameter: \t" + str(data[MAX_LENGTH-1]) + "mm"
     diameter_label.config(text=dia_str)
-    print(ax1.lines[0])
     return ax1.lines[0],
 
 def popData():
