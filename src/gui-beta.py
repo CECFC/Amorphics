@@ -22,7 +22,7 @@ xAxis = []
 
 pid_active = True
 
-def togglePID():
+def toggle_pid():
     global pid_active
     pid_active = not pid_active
     if pid_active:
@@ -30,7 +30,7 @@ def togglePID():
     else:
         pid_button.config(text="PID DISABLED")
 
-def initializeData():
+def initialize_data():
     for i in range(MAX_LENGTH):
         xAxis.append(i)
         data.append(0)
@@ -53,7 +53,7 @@ motor_label = Label(root, text="Motor Position: \t0", font=('Avenir LT Std 35 Li
 kp_label = Label(root, text="P: \t\t0", font=('Avenir LT Std 35 Light', 30))
 ki_label = Label(root, text="I: \t\t0", font=('Avenir LT Std 35 Light', 30))
 kd_label = Label(root, text="D: \t\t0", font=('Avenir LT Std 35 Light', 30))
-pid_button = Button(root, text="PID DISABLED", width=13, command=togglePID)
+pid_button = Button(root, text="PID DISABLED", width=13, command=toggle_pid)
 diameter_label = Label(root, text="Diameter: \t0", font=('Avenir LT Std 35 Light', 30))
 current_command = StringVar()
 current_command.set("hi")
@@ -81,33 +81,42 @@ terminal_entry.place(x=10, y=400)
 ax1 = fig.add_subplot(1,1,1)
 line, = ax1.plot(xAxis, data)
 
-togglePID()
+toggle_pid()
+
+# Back Splash
+# backsplash_path = 'src/bigblob.png' 
+
+# backsplash_img = ImageTk.PhotoImage(Image.open(backsplash_path))
+
+# backsplash_canvas = Canvas(root, width=300, height=300)
+
+# backsplash_canvas.create_image(20, 20, anchor=NW, image=backsplash_img)  
 
 def animate(i):
     global current_loop_timestamp, last_loop_timestamp
     last_loop_timestamp=current_loop_timestamp
     current_loop_timestamp=time.time()
     #print(1/(current_loop_timestamp-last_loop_timestamp))
-    addRandomData()
+    add_random_data()
     ax1.clear()
     ax1.plot(xAxis, data)
     dia_str = "Diameter: \t" + str(data[MAX_LENGTH-1]) + "mm"
     diameter_label.config(text=dia_str)
     return ax1.lines[0],
 
-def popData():
+def pop_data():
     for i in range(len(data)-1):
         data[i] = data[i+1]
     del data[-1]
 
-def addRandomData():
+def add_random_data():
     num = random.randrange(1023)
-    addData(num)
+    add_data(num)
 
-def addData(num):
+def add_data(num):
     data.append(num)
     if len(data) > MAX_LENGTH:
-        popData()
+        pop_data()
 
 
 def on_closing():
@@ -117,5 +126,5 @@ def on_closing():
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
-ani = animation.FuncAnimation(fig, animate, init_func = initializeData(), interval=1, blit=True)
+ani = animation.FuncAnimation(fig, animate, init_func = initialize_data(), interval=1, blit=True)
 root.mainloop()
