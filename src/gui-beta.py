@@ -11,6 +11,7 @@ import math
 import random
 import sys
 import time # just for debugging purposes, delete later
+from PIL import ImageTk, Image
 
 current_loop_timestamp=1 #stores the timestamp of the current animation loop execution
 last_loop_timestamp=0 #stores the timestamp of the previous animation loop execution
