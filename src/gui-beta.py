@@ -9,12 +9,11 @@ from matplotlib import style
 import matplotlib.animation as animation
 import math
 import random
+import sys
 
 MAX_LENGTH = 60
 data = []
 xAxis = []
-
-
 
 pid_active = True
 
@@ -102,7 +101,12 @@ def addData(num):
         popData()
 
 
+def on_closing():
+    root.quit()
+    root.destroy()
+    sys.exit(0)
 
+root.protocol("WM_DELETE_WINDOW", on_closing)
 
 ani = animation.FuncAnimation(fig, animate, interval=1000, blit=False)
 root.mainloop()
