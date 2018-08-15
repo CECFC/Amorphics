@@ -43,14 +43,14 @@ canvas = FigureCanvasTkAgg(fig, master=root)
 canvas.get_tk_widget().place(x=800, y=0)
 
 # Tkinter Widgets
-title_label = Label(root, text="Amorphics", font=('Sans-Serif', 80))
+title_label = Label(root, text="AMORPHICS", font=('Aller Display', 70))
 title_label.place(x=10, y=10)
-motor_label = Label(root, text="Motor Position: \t0", font=('Sans-Serif', 30))
-kp_label = Label(root, text="P: \t\t0", font=('Sans-Serif', 30))
-ki_label = Label(root, text="I: \t\t0", font=('Sans-Serif', 30))
-kd_label = Label(root, text="D: \t\t0", font=('Sans-Serif', 30))
+motor_label = Label(root, text="Motor Position: \t0", font=('Avenir LT Std 35 Light', 30))
+kp_label = Label(root, text="P: \t\t0", font=('Avenir LT Std 35 Light', 30))
+ki_label = Label(root, text="I: \t\t0", font=('Avenir LT Std 35 Light', 30))
+kd_label = Label(root, text="D: \t\t0", font=('Avenir LT Std 35 Light', 30))
 pid_button = Button(root, text="PID DISABLED", width=10, command=togglePID)
-diameter_label = Label(root, text="Diameter: \t0", font=('Sans-Serif', 30))
+diameter_label = Label(root, text="Diameter: \t0", font=('Avenir LT Std 35 Light', 30))
 current_command = StringVar()
 current_command.set("hi")
 
@@ -85,6 +85,8 @@ def animate(i):
     ax1.plot(xAxis, data)
     dia_str = "Diameter: \t" + str(data[MAX_LENGTH-1]) + "mm"
     diameter_label.config(text=dia_str)
+    print(ax1.lines[0])
+    return ax1.lines[0],
 
 def popData():
     for i in range(len(data)-1):
@@ -108,5 +110,5 @@ def on_closing():
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
-ani = animation.FuncAnimation(fig, animate, interval=1000, blit=False)
+ani = animation.FuncAnimation(fig, animate, interval=1, blit=True)
 root.mainloop()
