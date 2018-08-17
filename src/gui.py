@@ -11,6 +11,7 @@ import math
 import random
 import sys
 import time
+import main
 
 current_loop_timestamp=1 # stores the timestamp of the current animation loop execution
 last_loop_timestamp=0 # stores the timestamp of the previous animation loop execution
@@ -65,16 +66,16 @@ canvasWidget = canvas.get_tk_widget()
 
 # Terminal Widgets
 current_command = StringVar()
-current_command.set('hi')
+current_command.set('')
 terminal_entry = Entry(root, textvariable=current_command)
 def commandEntered(p0):
-    print('Command: ' + terminal_entry.get())
+    main.execute_command(terminal_entry.get())
     terminal_entry.delete(0, 'end')
 terminal_entry.bind('<Return>', commandEntered)
 
 # Fan Widgets
-f1_slider = Scale(root, from_=100, to=0, label='Fan 1', length=450, width=30, font=('Avenir LT Std 35 Light', 10))
-f2_slider = Scale(root, from_=100, to=0, label='Fan 2', length=450, width=30, font=('Avenir LT Std 35 Light', 10))
+f1_slider = Scale(root, command=main.set_fan1, from_=100, to=0, label='Fan 1', length=450, width=30, font=('Avenir LT Std 35 Light', 10))
+f2_slider = Scale(root, command=main.set_fan2, from_=100, to=0, label='Fan 2', length=450, width=30, font=('Avenir LT Std 35 Light', 10))
 
 # Motor Widget
 motor_label = Label(root, text='Motor Position: \t0', font=('Avenir LT Std 35 Light', 30))
@@ -112,7 +113,7 @@ def animate(i):
         fps_label.config(text=fps_str)
     else:
         fps_label.config(text='')
-    add_random_data()
+    main.loop()
     ax1.clear()
     ax1.plot(xAxis, data)
     dia_str = 'Diameter: \t' + str(data[MAX_LENGTH-1]) + 'mm'
@@ -128,5 +129,5 @@ def add_data(num):
     if len(data) > MAX_LENGTH:
         del data[0]
 
-ani = animation.FuncAnimation(fig, animate, interval=300, blit=True)
+ani = animation.FuncAnimation(fig, animate, interval=1, blit=True)
 root.mainloop()
