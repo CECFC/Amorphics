@@ -1,0 +1,7 @@
+-----------------TODO-----------------
+
+Electronics:
+	Components required
+	- Get sensor data (fake data if DEBUG is True)
+	- Set Fan1 and Fan1
+	- Turn Motor
