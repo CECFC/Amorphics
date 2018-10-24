@@ -18,25 +18,20 @@ import log
 current_loop_timestamp=1 # stores the timestamp of the current animation loop execution
 last_loop_timestamp=0 # stores the timestamp of the previous animation loop execution
 
-MAX_LENGTH = 60 # How many data values to keep before dumping
-data = [] # Stores the sensor data to be graphed 
-xAxis = [] # The x-axis grid (1...MAX_LENGTH)
-update_graph = True
+# MAX_LENGTH = 60 # How many data values to keep before dumping
+# data = [] # Stores the sensor data to be graphed 
+# xAxis = [] # The x-axis grid (1...MAX_LENGTH)
+# update_graph = True
 
 win = None
 
 # Initialize the data
-for i in range(MAX_LENGTH):
-        xAxis.append(i)
-        data.append(0)
+# for i in range(MAX_LENGTH):
+        # xAxis.append(i)
+        # data.append(0)
 
 def toggle_pause():
-    global update_graph
-    update_graph = not update_graph
-    if update_graph:
-        graph_pause_button.config(text="Pause")
-    else:
-        graph_pause_button.config(text="Resume")
+    print('Toggled (does nothing yet...)')
 
 def reset_log():
     log.log = []
@@ -127,7 +122,7 @@ f2_slider = Scale(root, command=main.set_fan2, from_=100, to=0, label='Fan 2', l
 motor_label = Label(root, text='Motor Position: \t0', font=('Roboto Slab', 30))
 
 # --------- Drawing to the Screen ---------
-canvasWidget.place(x=800, y=0)
+# canvasWidget.place(x=800, y=0)
 title_label.place(x=10, y=10)
 motor_label.place(x=10, y=100)
 f1_slider.place(x=550, y=15)
@@ -139,26 +134,11 @@ save_button.place(x=1200, y=540)
 terminal_label.place(x=10, y=500)
 terminal_entry.place(x=10, y=550)
 
-ax1 = fig.add_subplot(1,1,1)
-line, = ax1.plot(xAxis, data)
+# ax1 = fig.add_subplot(1,1,1)
+# line, = ax1.plot(xAxis, data)
 
-def animate(i):
-    if update_graph:
-        main.loop()
-        ax1.clear()
-        ax1.plot(xAxis, data)
-        dia_str = 'Diameter: \t' + str(data[MAX_LENGTH-1])[0:5] + 'mm'
-        diameter_label.config(text=dia_str)
-    return ax1.lines[0],
 
-def add_random_data():
-    num = random.randrange(1023)
-    add_data(num)
 
-def add_data(num):
-    data.append(num)
-    if len(data) > MAX_LENGTH:
-        del data[0]
 
-ani = animation.FuncAnimation(fig, animate, interval=0, blit=True)
+# ani = animation.FuncAnimation(fig, animate, interval=0, blit=True)
 root.mainloop()

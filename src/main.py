@@ -4,7 +4,7 @@ import sys
 import gui
 import log
 import electronics
-print("hehe")
+print('NoGraph is Running')
 
 # -------- PID LOOP --------
 K_p = 2 #constant for the proportional component of the control loop
@@ -46,7 +46,6 @@ def loop():
     if time.time() - start_time >= frame_interval:
         log.log_diameter(sensor_data, frame_interval)
         start_time = time.time()
-    gui.add_data(sensor_data)
 			
     #update fan speeds
     try:
