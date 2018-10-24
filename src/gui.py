@@ -23,6 +23,8 @@ data = [] # Stores the sensor data to be graphed
 xAxis = [] # The x-axis grid (1...MAX_LENGTH)
 update_graph = True
 
+win = None
+
 # Initialize the data
 for i in range(MAX_LENGTH):
         xAxis.append(i)
@@ -40,7 +42,14 @@ def reset_log():
     log.log = []
     log.x_axis = []
 
+def plot_graph(date, batch, percent, type_str):
+	print("plot_graph()")
+	log.plot_pdf(date, batch, percent, type_str)
+	win.destroy()
+	
+
 def save_graph():
+	global win
 	date = datetime.datetime.now().date()
 	date_str = str(date.month) + '/' + str(date.day) + '/' + str(date.year)[2:]
 	if update_graph:
@@ -79,7 +88,7 @@ def save_graph():
 	percent_entry = Entry(win, textvariable=percent, font=('Roboto Slab', 20))
 	percent_entry.pack(pady=10)
 	
-	save_button = Button(win, command=lambda: log.plot_pdf(date.get(), batch.get(), percent.get(), type_str.get()), text='Save', width=10, font=('Roboto Slab', 20))
+	save_button = Button(win, command=lambda: plot_graph(date.get(), batch.get(), percent.get(), type_str.get()), text='Save', width=10, font=('Roboto Slab', 20))
 	save_button.pack(pady=10)
 
 # Root Widget
