@@ -4,6 +4,7 @@ import sys
 import gui
 import log
 import electronics
+print("hehe")
 
 # -------- PID LOOP --------
 K_p = 2 #constant for the proportional component of the control loop
