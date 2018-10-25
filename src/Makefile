@@ -1,2 +1,2 @@
 all:
-	python3 main.py
+	lxterminal -t "Ammorphics" -e ../run.sh
