@@ -77,3 +77,18 @@ def turnMotor(steps):
                 GPIO.output(STP_PIN, GPIO.HIGH)
                 motor_pos += 1
                 time.sleep(0.01)
+
+def stepMotor(direction):
+	global motor_pos
+	if direction:
+		GPIO.output(STP_PIN, GPIO.LOW)
+		time.sleep(0.01)
+		GPIO.output(STP_PIN, GPIO.HIGH)
+		motor_pos += 1
+		time.sleep(0.01)
+	else:
+		GPIO.output(STP_PIN, GPIO.HIGH)
+		time.sleep(0.01)
+		GPIO.output(STP_PIN, GPIO.HIGH)
+		motor_pos -= 1
+		time.sleep(0.01)

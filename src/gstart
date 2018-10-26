@@ -1,0 +1,2 @@
+echo "Starting geany terminal..."
+lxterminal -t "Geany" -e ./geany.sh

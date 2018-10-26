@@ -35,31 +35,34 @@ def set_fan2(value):
 
 
 def loop():
-    global PID_ENABLE
-    global FAN1_STATE, FAN2_STATE
-    global start_time
-    # print(time.time() - start_time)
-	
+	global PID_ENABLE
+	global FAN1_STATE, FAN2_STATE
+	global start_time
+	# print(time.time() - start_time)
 				
-    #get new data from sensor
-    sensor_data = electronics.getSensorData()
-    if time.time() - start_time >= frame_interval:
-        log.log_diameter(sensor_data, frame_interval)
-        start_time = time.time()
-			
-    #update fan speeds
-    try:
-        fan1_pwm.ChangeDutyCycle(FAN1_STATE)
-        fan2_pwm.ChangeDutyCycle(FAN2_STATE)
-    except:
-        x = 0
-
-    #run control loop if enabled
-    if PID_ENABLE:
-        checkSteps(data[0])
+	#get new data from sensor
+	sensor_data = electronics.getSensorData()
+	dia_str = 'Diameter: \t' + str(sensor_data)[0:5] + 'mm'
+	gui.diameter_label.config(text=dia_str)
+	# print(dia_str)
 	
-    # Sleep
-    # time.sleep(frame_interval - ((time.time() - start_time) % frame_interval))
+	if time.time() - start_time >= frame_interval:
+		log.log_diameter(sensor_data, frame_interval)
+		start_time = time.time()
+			
+	#update fan speeds
+	try:
+		fan1_pwm.ChangeDutyCycle(FAN1_STATE)
+		fan2_pwm.ChangeDutyCycle(FAN2_STATE)
+	except:
+		x = 0
+
+	#run control loop if enabled
+	if PID_ENABLE:
+		checkSteps(data[0])
+	
+	# Sleep
+	# time.sleep(frame_interval - ((time.time() - start_time) % frame_interval))
 
 def checkSteps(sensor):
 	global K_p
@@ -112,3 +115,4 @@ def logData(diameter):
     # Diameter is in mm
     gui.add_data(diameter)
     log_file.write(str(diameter)[:5] + "\n")
+

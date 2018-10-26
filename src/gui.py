@@ -11,12 +11,14 @@ import math
 import random
 import sys
 import datetime
-
 import main
 import log
+import threading
 
 current_loop_timestamp=1 # stores the timestamp of the current animation loop execution
 last_loop_timestamp=0 # stores the timestamp of the previous animation loop execution
+
+main_thread = None
 
 # MAX_LENGTH = 60 # How many data values to keep before dumping
 # data = [] # Stores the sensor data to be graphed 
@@ -86,12 +88,16 @@ def save_graph():
 	save_button = Button(win, command=lambda: plot_graph(date.get(), batch.get(), percent.get(), type_str.get()), text='Save', width=10, font=('Roboto Slab', 20))
 	save_button.pack(pady=10)
 
+def exit_app():
+	print("Exiting")
+	raise SystemExit
+
 # Root Widget
 fig = plt.figure()
 root = tk.Toplevel()
 root.geometry('1450x600+0+0')
 root.title('Amorphics')
-root.protocol('WM_DELETE_WINDOW', exit)
+root.protocol('WM_DELETE_WINDOW', exit_app)
 title_label = Label(root, text='AMORPHICS', font=('Aller Display', 70))
 
 
@@ -133,12 +139,11 @@ reset_button.place(x=1000, y=540)
 save_button.place(x=1200, y=540)
 terminal_label.place(x=10, y=500)
 terminal_entry.place(x=10, y=550)
-
-# ax1 = fig.add_subplot(1,1,1)
-# line, = ax1.plot(xAxis, data)
-
-
-
-
-# ani = animation.FuncAnimation(fig, animate, interval=0, blit=True)
+print("Process")
+def call_loop():
+	while True:
+		main.loop()
+main_thread = threading.Thread(target=call_loop)
+main_thread.start()
+print("root.mainloop()")
 root.mainloop()
