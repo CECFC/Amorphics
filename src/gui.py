@@ -19,13 +19,9 @@ current_loop_timestamp=1 # stores the timestamp of the current animation loop ex
 last_loop_timestamp=0 # stores the timestamp of the previous animation loop execution
 
 main_thread = None
-
-# MAX_LENGTH = 60 # How many data values to keep before dumping
-# data = [] # Stores the sensor data to be graphed 
-# xAxis = [] # The x-axis grid (1...MAX_LENGTH)
-# update_graph = True
-
 win = None
+dia_canvas = None
+
 
 # Initialize the data
 # for i in range(MAX_LENGTH):
@@ -100,6 +96,12 @@ root.title('Amorphics')
 root.protocol('WM_DELETE_WINDOW', exit_app)
 title_label = Label(root, text='AMORPHICS', font=('Aller Display', 70))
 
+# Diameter Canvas
+dia_canvas = tk.Canvas(root, width=450, height=450, borderwidth=0)
+def _create_circle(self, x, y, r, **kwargs):
+	return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
+tk.Canvas.create_circle = _create_circle
+dia_canvas.create_circle(225, 225, 200, outline="black", width=10)
 
 # Graph Widgets 
 diameter_label = Label(root, text='Diameter: \t0', font=('Roboto Slab', 30))
@@ -139,6 +141,7 @@ reset_button.place(x=1000, y=540)
 save_button.place(x=1200, y=540)
 terminal_label.place(x=10, y=500)
 terminal_entry.place(x=10, y=550)
+dia_canvas.place(x=850, y=16)
 print("Process")
 def call_loop():
 	while True:
