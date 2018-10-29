@@ -1,4 +1,10 @@
 #!/usr/bin/python3
+from sys import platform
+
+debug = True
+if platform == "linux" or platform == "linux2":
+	debug = False
+
 import time
 import sys
 import gui
@@ -7,17 +13,17 @@ import electronics
 print('NoGraph is Running')
 
 # -------- PID LOOP --------
-K_p = 2 #constant for the proportional component of the control loop
-K_i = 2 #constant for the integral component of the control loop
-K_d = 0 #constant for the derivative component of the control loop
-PID_WINDUP_LIMIT = 100 #maximum magnitude of the value in the pid integral term
+K_p = 2 # constant for the proportional component of the control loop
+K_i = 2 # constant for the integral component of the control loop
+K_d = 0 # constant for the derivative component of the control loop
+PID_WINDUP_LIMIT = 100 # maximum magnitude of the value in the pid integral term
 
 #state variables
-PID_ENABLE = False #whether or not to compute and execute control loop
+PID_ENABLE = False # whether or not to compute and execute control loop
 pid_accumulator=0
 
-current_loop_timestamp=1 #stores the timestamp of the current animation loop execution
-last_loop_timestamp=0 #stores the timestamp of the previous animation loop execution
+current_loop_timestamp=1 # stores the timestamp of the current animation loop execution
+last_loop_timestamp=0 # stores the timestamp of the previous animation loop execution
 
 # Log file
 log_file = open("log.txt", "a")
@@ -35,34 +41,35 @@ def set_fan2(value):
 
 
 def loop():
-	global PID_ENABLE
-	global FAN1_STATE, FAN2_STATE
-	global start_time
-	# print(time.time() - start_time)
+	if not debug:
+		global PID_ENABLE
+		global FAN1_STATE, FAN2_STATE
+		global start_time
+		# print(time.time() - start_time)
+					
+		# get new data from sensor
+		sensor_data = electronics.getSensorData()
+		dia_str = 'Diameter: \t' + str(sensor_data)[0:5] + 'mm'
+		gui.diameter_label.config(text=dia_str)
+		# print(dia_str)
+		
+		if time.time() - start_time >= frame_interval:
+			log.log_diameter(sensor_data, frame_interval)
+			start_time = time.time()
 				
-	#get new data from sensor
-	sensor_data = electronics.getSensorData()
-	dia_str = 'Diameter: \t' + str(sensor_data)[0:5] + 'mm'
-	gui.diameter_label.config(text=dia_str)
-	# print(dia_str)
-	
-	if time.time() - start_time >= frame_interval:
-		log.log_diameter(sensor_data, frame_interval)
-		start_time = time.time()
-			
-	#update fan speeds
-	try:
-		fan1_pwm.ChangeDutyCycle(FAN1_STATE)
-		fan2_pwm.ChangeDutyCycle(FAN2_STATE)
-	except:
-		x = 0
+		# update fan speeds
+		try:
+			fan1_pwm.ChangeDutyCycle(FAN1_STATE)
+			fan2_pwm.ChangeDutyCycle(FAN2_STATE)
+		except:
+			x = 0
 
-	#run control loop if enabled
-	if PID_ENABLE:
-		checkSteps(data[0])
-	
-	# Sleep
-	# time.sleep(frame_interval - ((time.time() - start_time) % frame_interval))
+		# run control loop if enabled
+		if PID_ENABLE:
+			checkSteps(data[0])
+		
+		# Sleep
+		# time.sleep(frame_interval - ((time.time() - start_time) % frame_interval))
 
 def checkSteps(sensor):
 	global K_p
