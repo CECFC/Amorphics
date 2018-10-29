@@ -1,38 +1,46 @@
-import RPi.GPIO as GPIO
-import smbus
-import time
+from sys import platform
 
-GPIO.setwarnings(False) #ain't nobody need no warnin'
+debug = True
 
-ADC_I2C_ADDR = 0x49 #I2C address of the ADC
-PWM_FREQ = 100 #PWM frequency to use for controlling fan speed
-STP_PIN = 20 #GPIO pin connected to the STP pin of the BED
-DIR_PIN = 21 #GPIO pin connected to the DIR pin of the BED
-FAN1_PIN = 19 #GPIO pin connected to the channel 1 enable on the L298
-FAN2_PIN = 13 #GPIO pin connected to the channel 2 enable on the L298
+if platform == "linux" or platform == "linux2":
+    debug = False
 
-#GPIO init
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(DIR_PIN, GPIO.OUT)
-GPIO.setup(STP_PIN, GPIO.OUT)
-GPIO.setup(FAN1_PIN, GPIO.OUT)
-GPIO.setup(FAN2_PIN, GPIO.OUT)
-fan1_pwm = GPIO.PWM(FAN1_PIN, PWM_FREQ)
-fan2_pwm = GPIO.PWM(FAN2_PIN, PWM_FREQ)
-fan1_pwm.start(0)
-fan2_pwm.start(0)
+if not debug:
+    import RPi.GPIO as GPIO
+    import smbus
+    import time
 
-#I2C init
-bus=smbus.SMBus(1)
-bus.write_byte(0x49, 0x0C)
-time.sleep(0.5)
+    GPIO.setwarnings(False) #ain't nobody need no warnin'
 
-# States
-motor_pos = 0
-fan1_state = 0
-fan2_state = 0
+    ADC_I2C_ADDR = 0x49 #I2C address of the ADC
+    PWM_FREQ = 100 #PWM frequency to use for controlling fan speed
+    STP_PIN = 20 #GPIO pin connected to the STP pin of the BED
+    DIR_PIN = 21 #GPIO pin connected to the DIR pin of the BED
+    FAN1_PIN = 19 #GPIO pin connected to the channel 1 enable on the L298
+    FAN2_PIN = 13 #GPIO pin connected to the channel 2 enable on the L298
 
-debug = False
+    #GPIO init
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(DIR_PIN, GPIO.OUT)
+    GPIO.setup(STP_PIN, GPIO.OUT)
+    GPIO.setup(FAN1_PIN, GPIO.OUT)
+    GPIO.setup(FAN2_PIN, GPIO.OUT)
+    fan1_pwm = GPIO.PWM(FAN1_PIN, PWM_FREQ)
+    fan2_pwm = GPIO.PWM(FAN2_PIN, PWM_FREQ)
+    fan1_pwm.start(0)
+    fan2_pwm.start(0)
+
+    #I2C init
+    bus=smbus.SMBus(1)
+    bus.write_byte(0x49, 0x0C)
+    time.sleep(0.5)
+
+    # States
+    motor_pos = 0
+    fan1_state = 0
+    fan2_state = 0
+
+
 
 def getSensorData():
     if debug:
