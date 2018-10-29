@@ -1,4 +1,5 @@
 import tkinter as tk
+from multiprocessing import Process
 from tkinter import Label, Button, StringVar, Entry, Scale
 
 import matplotlib
@@ -19,8 +20,11 @@ current_loop_timestamp=1 # stores the timestamp of the current animation loop ex
 last_loop_timestamp=0 # stores the timestamp of the previous animation loop execution
 
 main_thread = None
+loop_finished = False
 win = None
 dia_canvas = None
+
+
 
 
 # Initialize the data
@@ -86,6 +90,7 @@ def save_graph():
 
 def exit_app():
 	print("Exiting")
+	main_thread.terminate()
 	raise SystemExit
 
 # Root Widget
@@ -142,11 +147,13 @@ save_button.place(x=1200, y=540)
 terminal_label.place(x=10, y=500)
 terminal_entry.place(x=10, y=550)
 dia_canvas.place(x=850, y=16)
+
+
 print("Process")
 def call_loop():
-	while True:
+	while not loop_finished:
 		main.loop()
-main_thread = threading.Thread(target=call_loop)
+main_thread = Process(target=call_loop)
 main_thread.start()
 print("root.mainloop()")
 root.mainloop()
