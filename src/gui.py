@@ -47,6 +47,7 @@ def _create_circle(self, x, y, r, **kwargs):
 	return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
 tk.Canvas.create_circle = _create_circle
 dia_canvas = tk.Canvas(root, width=450, height=450, borderwidth=0)
+circle = dia_canvas.create_circle(255, 255, 50, outline='black', width=3)
 
 def toggle_pause():
     print('Toggled (does nothing yet...)')
@@ -61,10 +62,15 @@ def plot_graph(date, batch, percent, type_str):
 	win.destroy()
 	
 def displayDiameter(sensor_data):
+	global circle
 	dia_str = 'Diameter: \t' + str(sensor_data)[0:5] + 'mm'
 	diameter_label.config(text=dia_str)
-	dia_canvas.delete('all')
-	dia_canvas.create_circle(255, 255, sensor_data*10, outline='black', width=3)
+	circle_diameter = sensor_data * 100
+	circle_center_x = 255
+	circle_center_y = 255
+	dia_canvas.coords(circle, circle_center_x - (circle_diameter/2), circle_center_y - (circle_diameter/2), circle_center_x + (circle_diameter/2), circle_center_y + (circle_diameter/2))
+	
+	# print(dia_canvas.coords(circle))
 
 def save_graph():
 	global win

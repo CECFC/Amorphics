@@ -42,7 +42,7 @@ def set_fan2(value):
 
 sudo_dia = 0.01
 def loop():
-	time.sleep(0.1)
+	# time.sleep(0.05)
 	global sudo_dia
 	if debug:
 		sudo_dia += 0.01
