@@ -10,6 +10,7 @@ import sys
 import gui
 import log
 import electronics
+import random
 print('NoGraph is Running')
 
 # -------- PID LOOP --------
@@ -39,9 +40,16 @@ def set_fan1(value):
 def set_fan2(value):
     electronics.setFan(2, value)
 
-
+sudo_dia = 0.01
 def loop():
-	if not debug:
+	time.sleep(0.1)
+	global sudo_dia
+	if debug:
+		sudo_dia += 0.01
+		if sudo_dia > 5:
+			sudo_dia = 0.01
+		gui.displayDiameter(sudo_dia)
+	else:
 		global PID_ENABLE
 		global FAN1_STATE, FAN2_STATE
 		global start_time
@@ -49,8 +57,9 @@ def loop():
 					
 		# get new data from sensor
 		sensor_data = electronics.getSensorData()
-		dia_str = 'Diameter: \t' + str(sensor_data)[0:5] + 'mm'
-		gui.diameter_label.config(text=dia_str)
+		gui.displayDiameter(sensor_data)
+
+		
 		# print(dia_str)
 		
 		if time.time() - start_time >= frame_interval:

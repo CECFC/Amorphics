@@ -19,9 +19,20 @@ import threading
 current_loop_timestamp=1 # stores the timestamp of the current animation loop execution
 last_loop_timestamp=0 # stores the timestamp of the previous animation loop execution
 
+
+# Root Widget
+fig = plt.figure()
+root = tk.Toplevel()
+root.geometry('1450x600+0+0')
+root.title('Amorphics')
+root.protocol('WM_DELETE_WINDOW', exit)
+title_label = Label(root, text='AMORPHICS', font=('Aller Display', 70))
+
 main_thread = None
 loop_finished = False
 win = None
+dia_canvas = None
+circle_id = None
 dia_canvas = None
 
 
@@ -31,6 +42,11 @@ dia_canvas = None
 # for i in range(MAX_LENGTH):
         # xAxis.append(i)
         # data.append(0)
+
+def _create_circle(self, x, y, r, **kwargs):
+	return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
+tk.Canvas.create_circle = _create_circle
+dia_canvas = tk.Canvas(root, width=450, height=450, borderwidth=0)
 
 def toggle_pause():
     print('Toggled (does nothing yet...)')
@@ -44,6 +60,11 @@ def plot_graph(date, batch, percent, type_str):
 	log.plot_pdf(date, batch, percent, type_str)
 	win.destroy()
 	
+def displayDiameter(sensor_data):
+	dia_str = 'Diameter: \t' + str(sensor_data)[0:5] + 'mm'
+	diameter_label.config(text=dia_str)
+	dia_canvas.delete('all')
+	dia_canvas.create_circle(255, 255, sensor_data*10, outline='black', width=3)
 
 def save_graph():
 	global win
@@ -93,20 +114,8 @@ def exit_app():
 	main_thread.terminate()
 	raise SystemExit
 
-# Root Widget
-fig = plt.figure()
-root = tk.Toplevel()
-root.geometry('1450x600+0+0')
-root.title('Amorphics')
-root.protocol('WM_DELETE_WINDOW', exit_app)
-title_label = Label(root, text='AMORPHICS', font=('Aller Display', 70))
 
-# Diameter Canvas
-dia_canvas = tk.Canvas(root, width=450, height=450, borderwidth=0)
-def _create_circle(self, x, y, r, **kwargs):
-	return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
-tk.Canvas.create_circle = _create_circle
-dia_canvas.create_circle(225, 225, 200, outline="black", width=10)
+
 
 # Graph Widgets 
 diameter_label = Label(root, text='Diameter: \t0', font=('Roboto Slab', 30))
@@ -148,12 +157,14 @@ terminal_label.place(x=10, y=500)
 terminal_entry.place(x=10, y=550)
 dia_canvas.place(x=850, y=16)
 
+dia_canvas.itemconfig(circle_id, fill='blue')
 
 print("Process")
 def call_loop():
+	circle_radius = 1
 	while not loop_finished:
 		main.loop()
-main_thread = Process(target=call_loop)
+main_thread = threading.Thread(target=call_loop)
 main_thread.start()
 print("root.mainloop()")
 root.mainloop()
