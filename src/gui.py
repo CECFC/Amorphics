@@ -47,7 +47,17 @@ def _create_circle(self, x, y, r, **kwargs):
 	return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
 tk.Canvas.create_circle = _create_circle
 dia_canvas = tk.Canvas(root, width=450, height=450, borderwidth=0)
-circle = dia_canvas.create_circle(255, 255, 50, outline='black', width=3)
+circle = dia_canvas.create_circle(255, 255, 50, outline='black', width=0)
+
+goal = 3
+tolerance = 0.05
+innolab_tolerance = 0.2
+gui_multiplier = 120
+
+dia_canvas.create_circle(255, 255, (goal) * gui_multiplier / 2, outline='black', width=3)
+# dia_canvas.create_circle(255, 255, (goal-tolerance) * gui_multiplier / 2, outline='green', width=2)
+# dia_canvas.create_circle(255, 255, (goal+innolab_tolerance) * gui_multiplier / 2, outline='orange', width=2)
+# dia_canvas.create_circle(255, 255, (goal-innolab_tolerance) * gui_multiplier / 2, outline='orange', width=2)
 
 def toggle_pause():
     print('Toggled (does nothing yet...)')
@@ -65,11 +75,16 @@ def displayDiameter(sensor_data):
 	global circle
 	dia_str = 'Diameter: \t' + str(sensor_data)[0:5] + 'mm'
 	diameter_label.config(text=dia_str)
-	circle_diameter = sensor_data * 100
+	circle_diameter = sensor_data * gui_multiplier
 	circle_center_x = 255
 	circle_center_y = 255
 	dia_canvas.coords(circle, circle_center_x - (circle_diameter/2), circle_center_y - (circle_diameter/2), circle_center_x + (circle_diameter/2), circle_center_y + (circle_diameter/2))
-	
+	if (goal - tolerance < sensor_data and sensor_data < goal + tolerance):
+		dia_canvas.itemconfig(circle, fill='green')
+	elif (goal - innolab_tolerance < sensor_data and sensor_data < goal + innolab_tolerance):
+		dia_canvas.itemconfig(circle, fill='orange')
+	else:
+		dia_canvas.itemconfig(circle, fill='red')
 	# print(dia_canvas.coords(circle))
 
 def save_graph():
